@@ -1,0 +1,5 @@
+[package]
+
+name = "grit"
+version = "0.0.1"
+authors = [ "Matt Meshulam <matt@meshul.am>" ]
