@@ -4,8 +4,8 @@ mod lib;
 
 fn print_help() {
     println!("grit - a git-like file database in rust");
-    println!("  'grit init' -- initialize the object db");
-    println!("  'grit help' -- print this message");
+    println!("  grit init -- initialize the object db");
+    println!("  grit help -- print this message");
 }
 
 fn main() {
