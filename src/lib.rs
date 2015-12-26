@@ -1,9 +1,20 @@
+extern crate sha1;
+extern crate flate2;
+extern crate rustc_serialize;
+
+pub mod cache;
+pub mod sha;
+
 use std::fs;
 use std::io::ErrorKind;
 use std::path::PathBuf;
+//use sha1;
+
 
 // Where should we look for the object database?
-static DEFAULT_DB_PATH: &'static str = ".grit/objects";
+pub static DEFAULT_DB_PATH: &'static str = ".grit/objects";
+pub static INDEX_FILE: &'static str = ".grit/index";
+
 
 pub fn init_db() -> () {
     //let path = Path::new(DEFAULT_DB_PATH);
@@ -27,7 +38,7 @@ pub fn init_db() -> () {
 // Inlining to_hex from libserialize
 const CHARS: &'static [u8] = b"0123456789abcdef";
 
-fn to_hex(byte: u8) -> String {
+pub fn to_hex(byte: u8) -> String {
     let v = vec![CHARS[(byte >> 4)  as usize],
                  CHARS[(byte & 0xf) as usize]];
     unsafe {

@@ -3,3 +3,16 @@
 name = "grit"
 version = "0.0.1"
 authors = [ "Matt Meshulam <matt@meshul.am>" ]
+
+[dependencies]
+rustc-serialize = "0.3.16"
+sha1 = "0.1.1"
+flate2 = "0.2.11"
+
+[lib]
+name = "libgrit"
+path = "src/lib.rs"
+
+[[bin]]
+name = "grit"
+path = "src/main.rs"
