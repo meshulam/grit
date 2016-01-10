@@ -2,7 +2,7 @@
  * Accessors for the object cache.
  */
 
-use {DEFAULT_DB_PATH, INDEX_FILE};
+use DEFAULT_DB_PATH;
 
 use sha::ShaHash;
 use std::fs::File;
@@ -54,15 +54,15 @@ struct ObjectWriter {
 }
 
 impl ObjectWriter {
-    fn new() -> ObjectWriter {
-        let mut path = PathBuf::from(DEFAULT_DB_PATH);
-        path.push("tempobj");   // TODO: un-hardcode this
-        let tempfile = File::create(&path).unwrap();
+    fn new(db_path: PathBuf) -> ObjectWriter {
+        db_path.push("objects");
+        db_path.push("tempobj");   // TODO: un-hardcode this
+        let tempfile = File::create(db_path).unwrap();
 
         ObjectWriter {
             hasher: Sha1::new(),
             deflator: DeflateEncoder::new(tempfile, Compression::Default),
-            temp_path: path
+            temp_path: db_path
         }
     }
 
@@ -95,8 +95,9 @@ const BUF_SIZE: usize = 1024;
 pub fn hash_object(filename: &String) -> io::Result<String> {
     let mut file = try!(File::open(filename));
     let md = try!(file.metadata());
+    let path = try!(find_db_path());
 
-    let mut writer = ObjectWriter::new();
+    let mut writer = ObjectWriter::new(path);
     let mut buf = [0u8; BUF_SIZE];
 
     try!(write!(&mut writer, "{} {}\0", ObjectType::Blob.key(), md.len()));
@@ -110,10 +111,11 @@ pub fn hash_object(filename: &String) -> io::Result<String> {
     writer.finish().map(|sha| sha.to_hex())
 }
 
-pub fn cat_file(hash: String) -> io::Result<BufReader<DeflateDecoder<File>>> {
-    assert!(hash.len() >= 6, 
+pub fn cat_file(hash: &String) -> io::Result<BufReader<DeflateDecoder<File>>> {
+    assert!(hash.len() >= 6,
             "Must provide at least first six characters of obj hash");
-    let mut path = PathBuf::from(DEFAULT_DB_PATH);
+    let mut path = try!(find_db_path());
+    path.push("objects");
 
     let (dir, filename) = hash.split_at(2);
     path.push(dir);
@@ -123,10 +125,3 @@ pub fn cat_file(hash: String) -> io::Result<BufReader<DeflateDecoder<File>>> {
     Ok(BufReader::new(decoder))
 }
 
-pub fn read_cache() {
-    match File::open(INDEX_FILE).and_then(|f| f.metadata()) {
-        Ok(md) =>
-            println!("Opened index file {} with length {}", INDEX_FILE, md.len()),
-        Err(e) => println!("Error! {}", e)
-    }
-}

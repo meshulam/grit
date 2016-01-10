@@ -5,7 +5,6 @@ version = "0.0.1"
 authors = [ "Matt Meshulam <matt@meshul.am>" ]
 
 [dependencies]
-rustc-serialize = "0.3.16"
 sha1 = "0.1.1"
 flate2 = "0.2.11"
 
