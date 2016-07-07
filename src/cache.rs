@@ -2,8 +2,7 @@
  * Accessors for the object cache.
  */
 
-use DEFAULT_DB_PATH;
-
+use util::{GRIT_DIR_NAME, find_db_path};
 use sha::ShaHash;
 use std::fs::File;
 use std::io;
@@ -121,6 +120,7 @@ pub fn cat_file(hash: &String) -> io::Result<BufReader<DeflateDecoder<File>>> {
     path.push(dir);
     path.push(filename);
 
+    // TODO: support prefix matching
     let decoder = DeflateDecoder::new(try!(File::open(path)));
     Ok(BufReader::new(decoder))
 }
